@@ -61,17 +61,17 @@ Thus, you don't have to flood your drone with requests: "what is the attitude?",
 ## How should it be launched
 
 ### AWS backend
-1 A DynamoDB table with partition key "mavpackettype" (type - String).
-1 A Lambda instance to extract current drone's state. Example of code is located in "getDroneTelemetry" directory.
-1 An API Gateway instance.
+1. A DynamoDB table with partition key "mavpackettype" (type - String).
+1. A Lambda instance to extract current drone's state. Example of code is located in "getDroneTelemetry" directory.
+1. An API Gateway instance.
 
 ### DynamoDB refreshing script
 
-1 virtualenv -p python2 venv
-1 source venv/bin/activate
-1 pip install -r requirements.txt
-1 create ```.env``` file with ADDRESS (/dev/ttyUSB0, if you use USB-connected radio modem as we do), REGION (AWS region) and TABLE_NAME (name of your DynamoDB table) values
-1 chmod +x script.py
-1 ./script.py
+1. virtualenv -p python2 venv
+1. source venv/bin/activate
+1. pip install -r requirements.txt
+1. create ```.env``` file with ADDRESS (/dev/ttyUSB0, if you use USB-connected radio modem as we do), REGION (AWS region) and TABLE_NAME (name of your DynamoDB table) values
+1. chmod +x script.py
+1. ./script.py
 
 When you need the script, just interrupt it ith ```Ctrl + C```.
