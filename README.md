@@ -26,7 +26,7 @@ ser_pkt is an alternative. It's arranged as a C++ module. Not updated for 3 year
 
 ### pymavlink
 
-The most straightforward way to use MAVLink in Python is by [pymavlink|https://pypi.python.org/pypi/pymavlink]. But it has wrappers.
+The most straightforward way to use MAVLink in Python is by pymavlink. But it has wrappers.
 
 ### MAVProxy
 
@@ -37,7 +37,7 @@ The way it should be used:
 
 ### DroneKit
 
-[DroneKit|http://dronekit.io/] may be used to deal with drones via MAVLink. Actually, another pymavlink's wrapper.
+[DroneKit](http://dronekit.io/) may be used to deal with drones via MAVLink. Actually, another pymavlink's wrapper.
 ```python
 import time
 import dronekit
