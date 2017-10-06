@@ -3,9 +3,12 @@ import datetime
 from pprint import pprint
 import time
 import boto3
+import decouple
 import dronekit
-ADDRESS = "/dev/ttyUSB0"
+# connection string: tcp or udp with IP:port or serial port's
+ADDRESS = decouple.config("ADDRESS")
 BAUD_RATE = 57600
+# data to extract from a drone's state
 NEEDED_PROPERTIES = {
     "ATTITUDE": ("mavpackettype", "pitch", "roll", "yaw"),
     "OPTICAL_FLOW_RAD": (
@@ -17,12 +20,18 @@ NEEDED_PROPERTIES = {
         "integrated_zgyro",
         "mavpackettype")
 }
-# REFRESH_PERIOD = datetime.timedelta(milliseconds=250)
-fresh_data = {}
-REGION = "eu-west-1"
-TABLE_NAME = "drone_table"
+# Region to contain DynamoDB table
+REGION = decouple.config("REGION")
+# Period of synchronization
+SEND_PERIOD = 1  # secs
+# Name of a DynamoDB table to store data
+TABLE_NAME = decouple.config("TABLE_NAME")
 
 DYNAMODB = boto3.client("dynamodb", region_name=REGION)
+# data non-sent yet
+fresh_data = {needed_event: None for needed_event in NEEDED_PROPERTIES}
+# already sent data to check freshness
+old_data = {needed_event: None for needed_event in NEEDED_PROPERTIES}
 
 
 def connect(address):
@@ -67,8 +76,15 @@ def put_payload(payload):
 
 
 def send():
+    """Sends fresh data. Called with interval"""
     for name in fresh_data:
-        put_payload(fresh_data[name])
+        if fresh_data[name] is not None:
+            for key in fresh_data[name]:
+                if fresh_data[name][key] != old_data[key]:
+                    put_payload(fresh_data[name])
+                    old_data[name] = fresh_data[name]
+                    fresh_data[name] = None
+                    break
 
 
 def to_item(payload):
@@ -107,6 +123,6 @@ if __name__ == "__main__":
     #     'time_usec': 2176498438
     # }
     # put_payload(dummy_data)
-    loop(f=send, seconds=0.1)
+    loop(f=send, seconds=SEND_PERIOD)
     vehicle.close()
     print("Goodbye!")
